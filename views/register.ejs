@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+	<html lang="fr">
+    <%- include ('./partials/head') %>    
+	<body>
+
+		<div class="container ">
+			<h1><%= title %></h1>
+			<br>
+            <div class="alert-danger">
+                <% if (errors && errors.length > 0) { %>
+                    <ul>
+                      <% errors.forEach(error => { %>
+                        <li><%= error %></li>
+                      <% }); %>
+                    </ul>
+                  <% } %>
+            </div>
+			<div id="login">
+				<form method="post" action="/register" enctype="multipart/form-data">
+                    <legend class="text-center">Veuillez vous enregistrer</legend>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="username" id="username" placeholder="name@">
+                        <label for="username">Nom d'utilisateur</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com">
+                        <label for="email">Adresse Email</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                        <label for="password">Mot de passe</label>
+                    </div>
+                    <div>
+                        <label for="formFileLg" class="form-label">Choisir une image</label>
+                        <input class="form-control form-control-lg" id="avatar" name="avatar" accept="image/*" type="file">
+                    </div>
+
+                    <div class="error-container"></div>
+					
+					<button type="submit" class="btn btn-outline-primary  m-3 w-25">Inscription</button>
+				</form>
+			</div>
+
+		</div>
+
+		<footer>
+			<%- include ('./partials/footer') %>
+		</footer>
+
+        <script>
+            const usernameInput = document.querySelector('#username');
+            const errorContainer = document.querySelector('.error-container');
+
+            usernameInput.addEventListener('keyup', () => {
+            const username = usernameInput.value.trim(); //La méthode trim() est utilisée pour supprimer les espaces vides au début et à la fin de la valeur saisie
+            if (username.length < 3 || username.length > 20) {
+                errorContainer.textContent = 'Le nom d\'utilisateur doit comporter entre 3 et 20 caractères';
+                usernameInput.style.color = "red";
+                //usernameInput.classList.add('error');
+            } else {
+                errorContainer.textContent = '';
+                usernameInput.style.color = "green";
+                //usernameInput.classList.remove('error');
+            }
+            });
+        </script>
+    </body>
+</html>

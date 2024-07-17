@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <%- include ('./partials/head') %>
+<body>
+    <%- include ('./partials/header') %>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 m-5 text-end">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@image">@Ajouter une image</button>
+            </div>
+
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Nouvelle image</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        
+                        <form method="post" action="/photos" enctype="multipart/form-data">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="title" class="col-form-label">Titre de l'image :</label>
+                                    <input type="text" class="form-control" id="title" name="title">
+                                </div>
+                                <div>
+                                    <label for="formFileLg" class="form-label">Choisir une image</label>
+                                    <input class="form-control form-control-lg" id="imageUrl" name="imageUrl" accept="image/*" type="file">
+                                </div>
+                            </div>
+                            
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <% if (photos && photos.length > 0) { %>
+                <% photos.forEach(photo => { %>
+                    <div class="col-md-4">
+                        <div class="card-header bg-secondary">
+                            <div class="row">
+                                <% if (user.id == photo.user) { %>
+                                <div class="col-md-6">
+                                    <h5 class="card-title">
+                                        <span class="newTitle"><%= photo.title %> </span>
+                                        <button type="button" class="btn btn-sm btn-primary edit-button" data-photo-id="<%= photo._id %>">Modifier</button>
+                                    </h5>
+                                    
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-danger btn-sm delete-button" data-photo-id="<%= photo._id %>">Supprimer</button>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div class="card mb-4" style="height: 500px;">
+                            <img src="/public/uploads/<%= photo.imageUrl %>" class="card-img-top" alt="<%= photo.title %>" height="250px">
+                            <div class="card-body">
+                                <p>Likes: <%= photo.likes.length %></p>
+                                <% photo.comments.forEach(comment => { %>
+                                  <p><strong><%= comment.user.username %>:</strong> <%= comment.text %></p>
+                                <% }); %>
+                            </div>
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <form class="comment-form" action="/photos/:photoId/comments" method="POST">
+                                            <input type="hidden" name="photoId" value="<%= photo._id %>">
+                                            <input type="text" name="commentText" placeholder="Ajouter un commentaire">
+                                            <button type="submit">ok</button>
+                                          </form> 
+                                    </div>
+                                    <div class="col-md-2">
+                                        <form class="like-form" action="/photos/<%= photo._id %>/likes" method="POST">
+                                            <input type="hidden" name="photoId" value="<%= photo._id %>">
+                                            <button type="submit" id="like-button">Like</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12">
+                    <p>Aucune image disponible</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <%- include('./partials/footer') %>
+
+    
+    <script>
+        $(document).ready(function() {
+            $('.comment-form').submit(function(event) {
+                event.preventDefault();
+                console.log(event, "op");
+                var formData = $(this).serialize(); // Récupère les données du formulaire
+
+                $.ajax({
+                url: $(this).attr('action'), // URL de l'action du formulaire
+                type: $(this).attr('method'), // Méthode du formulaire (POST)
+                data: formData, // Données du formulaire sérialisées
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+                });
+            });
+
+
+            $('.edit-button').on('click', function() {
+                var photoId = $(this).data('photo-id');
+                var newTitle = prompt('Entrez le nouveau titre de la photo :');
+
+                $.ajax({
+                url: '/photos/' + photoId,
+                type: 'PUT',
+                data: { title: newTitle },
+                success: function(response) {
+                    console.log(response.message);
+                    $(this).parent().find('.newTitle').text(newTitle);
+                    location.reload();
+                },
+                error: function(error) {
+                    console.error(error);
+                    // Traiter l'erreur
+                }
+                });
+            });
+ 
+            // Gestionnaire de clic sur le bouton "Supprimer"            
+            $('.delete-button').on('click', function() {
+                var photoId = $(this).data('photo-id');
+                var confirmation = confirm('Voulez-vous vraiment supprimer cette photo ?');
+
+                if (confirmation) {
+                    $.ajax({
+                        url: '/photos/' + photoId,
+                        type: 'DELETE',
+                        success: function(response) {
+                            console.log(response.message);
+                            location.reload();
+                        },
+                        error: function(error) {
+                            console.error(error);
+                            // Traiter l'erreur
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "name": "image_share-api",
+  "version": "1.0.0",
+  "description": "Api ",
+  "main": "server.js",
+  "type": "module",
+  "author": "Yao Ivan",
+  "license": "ISC",
+  "homepage": "https://github.com/Ivanyao2002/image_share#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ivanyao2002/image_share.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ivanyao2002/image_share/issues"
+  },
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.3.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.0"
+  }
+}
